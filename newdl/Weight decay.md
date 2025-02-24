@@ -1,0 +1,2 @@
+we're giving multidimensional weights a gravity that pulls the high ones down, this makes the network use more channels rather than overusing some of them.
+decaying one dim parameters like layernorm scale and bias makes no sense since them being high can be a choice of the network and there are no other channels where we would want the network to use anyway

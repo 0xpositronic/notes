@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Note Manager</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #sidebar {
+            width: 250px;
+            background-color: #f0f0f0;
+            border-right: 1px solid #ccc;
+            padding: 20px;
+            overflow-y: auto;
+            flex-shrink: 0; /* Prevent sidebar from shrinking */
+        }
+
+        #sidebar h2 {
+            margin-top: 0;
+        }
+
+        #note-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        #note-list li {
+            padding: 8px 0;
+            cursor: pointer;
+            border-radius: 5px; /* Optional: Rounded corners for list items */
+            margin-bottom: 2px; /* Optional: Spacing between list items */
+        }
+
+        #note-list li:hover {
+            background-color: #e0e0e0; /* Hover color remains */
+        }
+
+        #preview-area {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto; /* Vertical scroll */
+            overflow-x: auto; /* Horizontal scroll */
+        }
+
+        #preview-area h2 {
+            margin-top: 0; /* Removed h2 'Preview' */
+        }
+
+        #note-content {
+            white-space: pre-wrap; /* Preserve formatting and enable wrapping in preview */
+            font-family: monospace; /* Optional: Use monospace font for better code display if needed */
+        }
+
+        #folder-selector-container {
+            margin-bottom: 20px;
+        }
+
+        /* Basic Markdown Styling */
+        #preview-area h1 { font-size: 2em; }
+        #preview-area h2 { font-size: 1.5em; }
+        #preview-area h3 { font-size: 1.2em; }
+        #preview-area p { line-height: 1.5; margin-bottom: 1em; }
+        #preview-area ul, #preview-area ol { padding-left: 2em; margin-bottom: 1em; }
+        #preview-area code { background-color: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+        pre code { display: block; padding: 10px; overflow-x: auto; }
+
+        /* Optional: Style for MathJax equations */
+        .mjx-chtml {
+            font-size: 0.9em; /* Adjust MathJax equation size if needed */
+        }
+
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script>
+        MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']] // Configure inline math delimiters
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+    <div id="sidebar">
+        <div id="folder-selector-container">
+            <p style="margin-bottom: 5px; font-size: 0.9em; color: #555;">
+                For security reasons, you need to <b>Select Your Notes Folder</b> each time you open this page.
+            </p>
+            <p style="margin-bottom: 10px; font-size: 0.85em; color: #777;">
+                This browser limitation prevents automatic file access. Your folder choice is remembered until you close the browser.
+            </p>
+            <input type="file" id="folder-selector" webkitdirectory directory multiple style="display: none;">
+            <button id="select-folder-button">Select Notes Folder</button>
+            <div id="selected-folder-path"></div>
+        </div>
+        <h2>Notes</h2>
+        <ul id="note-list">
+            <!-- Note list will be populated by JavaScript -->
+        </ul>
+    </div>
+
+    <div id="preview-area">
+        <div id="note-content">
+            <!-- Note content will be displayed here -->
+            <p>Select a note from the sidebar to preview it here.</p>
+        </div>
+    </div>
+
+    <script>
+        const noteList = document.getElementById('note-list');
+        const previewArea = document.getElementById('note-content');
+        const folderSelector = document.getElementById('folder-selector');
+        const selectFolderButton = document.getElementById('select-folder-button');
+        const selectedFolderPathDisplay = document.getElementById('selected-folder-path');
+
+        const notesFolderPath = '~/Documents/notes'; // **Hardcoded path - REMEMBER TO UPDATE TO ABSOLUTE PATH**
+        const hasSelectedFolderKey = 'hasSelectedNotesFolder'; // Key for localStorage
+
+        selectFolderButton.addEventListener('click', function() {
+            folderSelector.click();
+        });
+
+
+        folderSelector.addEventListener('change', function(event) {
+            noteList.innerHTML = '';
+            previewArea.innerHTML = '<p>Select a note from the sidebar to preview it here.</p>';
+
+            if (!folderSelector.files || folderSelector.files.length === 0) {
+                console.log("No folder selected.");
+                return;
+            }
+
+            let notesFound = false; // Flag to check if any notes were loaded
+            const folderColors = {}; // Object to store folder path to color mappings
+
+            function hashCode(str) { // Simple hash function
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return hash;
+            }
+
+            function intToPastelColor(intHash) { // Function to generate pastel color from hash
+                const shortenedHash = intHash % 360; // Hue range 0-360
+                const saturation = 30; // Pastel saturation
+                const lightness = 90;  // Pastel lightness
+                return `hsl(${shortenedHash}, ${saturation}%, ${lightness}%)`;
+            }
+
+
+            for (const file of folderSelector.files) {
+                if (file.name.endsWith('.md')) {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = file.name;
+                    listItem.title = file.webkitRelativePath || file.path || file.name;
+
+                    listItem.addEventListener('click', function() {
+                        file.text().then(content => {
+                            const relativePath = file.webkitRelativePath || file.path || file.name;
+                            const pathDisplay = `<p style="font-size: 0.8em; color: #777; margin-bottom: 10px;">${relativePath}</p>`;
+                            previewArea.innerHTML = pathDisplay + marked.parse(content);
+
+                            // **Explicitly tell MathJax to typeset the document body:**
+                            MathJax.typesetPromise([document.body]).catch(function (err) {
+                                console.error("MathJax typesetting error:", err);
+                            });
+                        });
+                    });
+
+                    // Get parent folder path
+                    const parentFolderPath = file.webkitRelativePath ? file.webkitRelativePath.split('/').slice(0, -1).join('/') : 'root'; // Extract parent path, 'root' if no path
+
+                    // Generate and apply background color based on folder path
+                    if (!folderColors[parentFolderPath]) { // Generate color only if not already generated for this folder
+                        folderColors[parentFolderPath] = intToPastelColor(hashCode(parentFolderPath));
+                    }
+                    listItem.style.backgroundColor = folderColors[parentFolderPath];
+
+
+                    noteList.appendChild(listItem);
+                    notesFound = true;
+                }
+            }
+
+            if (notesFound) {
+                localStorage.setItem(hasSelectedFolderKey, 'true');
+            } else {
+                localStorage.removeItem(hasSelectedFolderKey);
+                previewArea.innerHTML = "<p>No Markdown notes (.md files) found in the selected folder.</p>";
+                noteList.innerHTML = '<li>No notes found</li>';
+            }
+        });
+
+
+        // ** REMOVED localStorage check and auto-load on page load **
+
+    </script>
+
+</body>
+</html>

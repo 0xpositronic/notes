@@ -1,0 +1,2 @@
+A practical example: In most current games, sound going through a wall simply gets muffled by a filter. In reality, different frequencies are absorbed differently, the wall material resonates, and sound finds multiple paths to the listener. Simulating all this accurately in real-time is still computationally expensive.
+The reason this hasn't driven hardware development like graphics is that our ears are more forgiving than our eyes - we accept approximations more readily in audio than in visuals. But there's still plenty of room for more realism, especially in areas like:

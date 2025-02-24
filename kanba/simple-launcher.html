@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kanban Link Launcher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone {
+            flex-grow: 1;
+            border: 3px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+        
+        .drop-zone.dragover {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .board-container {
+            overflow-x: auto;
+            padding-bottom: 20px; /* Space for scrollbar */
+            margin: 0 -20px; /* Extend to edges */
+            padding: 0 20px; /* Restore spacing */
+        }
+
+        .kanban-board {
+            display: flex;
+            gap: 20px;
+            min-height: 400px;
+            padding: 20px 0;
+        }
+
+        .kanban-column {
+            background: #f1f1f1;
+            border-radius: 8px;
+            min-width: 300px;
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            height: fit-content;
+            max-height: 80vh;
+        }
+
+        .column-header {
+            padding: 15px;
+            background: #e0e0e0;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .column-title {
+            font-weight: bold;
+            margin: 0;
+            min-width: 50px;
+        }
+
+        .column-content {
+            padding: 10px;
+            flex-grow: 1;
+            min-height: 100px;
+            overflow-y: auto;
+        }
+
+        .link-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            cursor: move;
+        }
+
+        .link-item:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .link-item a {
+            color: #2196F3;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+
+        .link-controls {
+            display: flex;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        .link-controls button {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-column {
+            background: #e8e8e8;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            min-width: 300px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+
+        .add-column:hover {
+            background: #d8d8d8;
+        }
+
+        .dragging {
+            opacity: 0.5;
+        }
+
+        .column-over {
+            background: #e8f5e9;
+        }
+
+        .data-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .data-controls button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .data-controls button:hover {
+            background: #1976D2;
+        }
+
+        .column-delete {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            padding: 5px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-controls">
+        <div class="drop-zone" id="dropZone">
+            Drop links or bookmarks here
+        </div>
+        <div class="data-controls">
+            <button onclick="exportData()">Export Data</button>
+            <button onclick="document.getElementById('importInput').click()">Import Data</button>
+            <input type="file" id="importInput" style="display: none" onchange="importData(event)" accept=".json">
+        </div>
+    </div>
+    <div class="board-container">
+        <div class="kanban-board" id="kanbanBoard"></div>
+    </div>
+
+    <script>
+        // Data structure for links and columns
+        let boardData = JSON.parse(localStorage.getItem('kanbanData')) || {
+            version: "1.0",
+            lastModified: new Date().toISOString(),
+            columns: []
+        };
+
+        function saveData() {
+            boardData.lastModified = new Date().toISOString();
+            localStorage.setItem('kanbanData', JSON.stringify(boardData));
+        }
+
+        function exportData() {
+            const dataStr = JSON.stringify(boardData, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kanban-links-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (importedData.version && importedData.columns) {
+                            boardData = importedData;
+                            saveData();
+                            updateBoard();
+                        } else {
+                            alert('Invalid data format');
+                        }
+                    } catch (e) {
+                        alert('Error importing data');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function createColumn(column) {
+            const columnDiv = document.createElement('div');
+            columnDiv.className = 'kanban-column';
+            columnDiv.setAttribute('data-column-id', column.id);
+
+            const header = document.createElement('div');
+            header.className = 'column-header';
+            
+            const title = document.createElement('h3');
+            title.className = 'column-title';
+            title.textContent = column.title;
+            title.contentEditable = true;
+            title.addEventListener('blur', () => {
+                column.title = title.textContent;
+                saveData();
+            });
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'column-delete';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = () => {
+                if (confirm('Delete this column and all its links?')) {
+                    boardData.columns = boardData.columns.filter(col => col.id !== column.id);
+                    saveData();
+                    updateBoard();
+                }
+            };
+
+            const content = document.createElement('div');
+            content.className = 'column-content';
+            content.setAttribute('data-column-id', column.id);
+
+            header.appendChild(title);
+            header.appendChild(deleteBtn);
+            columnDiv.appendChild(header);
+            columnDiv.appendChild(content);
+
+            column.links.forEach(link => {
+                content.appendChild(createLinkItem(link, column.id));
+            });
+
+            // Handle dropping
+            content.addEventListener('dragover', e => {
+                e.preventDefault();
+                content.classList.add('column-over');
+            });
+
+            content.addEventListener('dragleave', () => {
+                content.classList.remove('column-over');
+            });
+
+            content.addEventListener('drop', e => {
+                e.preventDefault();
+                content.classList.remove('column-over');
+
+                const draggedLinkId = e.dataTransfer.getData('text/plain');
+                if (draggedLinkId) {
+                    // Move link between columns
+                    let sourceColumn;
+                    let link;
+
+                    for (const col of boardData.columns) {
+                        const linkIndex = col.links.findIndex(l => l.id === draggedLinkId);
+                        if (linkIndex !== -1) {
+                            sourceColumn = col;
+                            link = col.links.splice(linkIndex, 1)[0];
+                            break;
+                        }
+                    }
+
+                    if (link) {
+                        const targetColumn = boardData.columns.find(col => col.id === column.id);
+                        targetColumn.links.push(link);
+                        saveData();
+                        updateBoard();
+                    }
+                } else {
+                    // New link dropped from outside
+                    const url = e.dataTransfer.getData('URL') || e.dataTransfer.getData('text/uri-list');
+                    if (url) {
+                        addLink(url, column.id);
+                    } else {
+                        const html = e.dataTransfer.getData('text/html');
+                        if (html) {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = html;
+                            const anchor = tempDiv.querySelector('a');
+                            if (anchor && anchor.href) {
+                                addLink(anchor.href, column.id);
+                            }
+                        }
+                    }
+                }
+            });
+
+            return columnDiv;
+        }
+
+        function createLinkItem(link, columnId) {
+            const item = document.createElement('div');
+            item.className = 'link-item';
+            item.draggable = true;
+            item.setAttribute('data-link-id', link.id);
+
+            const anchor = document.createElement('a');
+            anchor.href = link.url;
+            anchor.textContent = link.url;
+            anchor.target = '_blank';
+
+            const controls = document.createElement('div');
+            controls.className = 'link-controls';
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => {
+                const column = boardData.columns.find(col => col.id === columnId);
+                column.links = column.links.filter(l => l.id !== link.id);
+                saveData();
+                updateBoard();
+            };
+
+            controls.appendChild(deleteBtn);
+            item.appendChild(anchor);
+            item.appendChild(controls);
+
+            item.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', link.id);
+                item.classList.add('dragging');
+            });
+
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+            });
+
+            return item;
+        }
+
+        function addLink(url, columnId = null) {
+            try {
+                new URL(url);
+                if (!columnId && boardData.columns.length === 0) {
+                    // Create first column if none exist
+                    boardData.columns.push({
+                        id: 'col_' + Date.now(),
+                        title: 'Links',
+                        links: []
+                    });
+                    columnId = boardData.columns[0].id;
+                }
+                columnId = columnId || boardData.columns[0].id;
+                const column = boardData.columns.find(col => col.id === columnId);
+                if (!column.links.some(link => link.url === url)) {
+                    column.links.push({
+                        id: 'link_' + Date.now(),
+                        url: url,
+                        dateAdded: new Date().toISOString()
+                    });
+                    saveData();
+                    updateBoard();
+                }
+            } catch (e) {
+                // Invalid URL, ignore it
+            }
+        }
+
+        function updateBoard() {
+            const board = document.getElementById('kanbanBoard');
+            board.innerHTML = '';
+            
+            boardData.columns.forEach(column => {
+                board.appendChild(createColumn(column));
+            });
+
+            const addColumnBtn = document.createElement('div');
+            addColumnBtn.className = 'add-column';
+            addColumnBtn.textContent = '+ Add Column';
+            addColumnBtn.onclick = () => {
+                const newColumn = {
+                    id: 'col_' + Date.now(),
+                    title: 'New Column',
+                    links: []
+                };
+                boardData.columns.push(newColumn);
+                saveData();
+                updateBoard();
+            };
+            board.appendChild(addColumnBtn);
+        }
+
+        // Initialize drop zone
+        const dropZone = document.getElementById('dropZone');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('dragover');
+            });
+        });
+
+        dropZone.addEventListener('drop', e => {
+            const url = e.dataTransfer.getData('URL') || e.dataTransfer.getData('text/uri-list');
+            if (url) {
+                addLink(url);
+                return;
+            }
+
+            const html = e.dataTransfer.getData('text/html');
+            if (html) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                const anchor = tempDiv.querySelector('a');
+                if (anchor && anchor.href) {
+                    addLink(anchor.href);
+                }
+            }
+        });
+
+        // Initialize board
+        updateBoard();
+
+        // Add paste support
+        document.addEventListener('paste', e => {
+            e.preventDefault();
+            const text = e.clipboardData.getData('text');
+            try {
+                new URL(text);
+                addLink(text);
+            } catch (e) {
+                // Not a valid URL, ignore it
+            }
+        });
+    </script>
+</body>
+</html>
