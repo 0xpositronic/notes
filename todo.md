@@ -1,19 +1,23 @@
 # Todo List
 
 # Current
+- laptop
 - hali
 - hala
-- laptop
-- Tusas idea
+- claude code
+- notes cleanup
+- return dl book
+- petul presentation
+Tusas idea
+CUDA DAY!
+get a few new prints (project lyra)
 
 ## Personal Reminders
 - Can food satisfy dopamine needs that I would otherwise satisfy with work?
 - Never have a period where you don't think about things you love
 - If spending that much time going to school, better learn while there or on commute
-- Do something pls
 
 ## Note Management & Productivity
-- Claude code: bookmark + note remake
 - Annotate everything you save with text for LLM retrieval
 - LLM finetuned to categorize/split daily sketch-like notes into easier to revisit chunks
 - Better to save some channels or posters instead of individual contents
@@ -28,15 +32,14 @@
 - Need easier and more structured access
 
 ### Organization System
-- Todo (with priorities)
-- Daily log
+- Todo (with priorities
 - Moving average of idea modifiers
 - My OCD is still affecting how I use notes/bookmarks
 
 ## Programming Projects
-- Project Lyra
 - YAML uses fewer tokens than JSON
-- Nushell hook doesn't account for extra two hours
+- yesterday's log doens't show up
+- Nushell hook doesn't account for extra two hours (doesn't get deleted)
 - CNN dissection
 - Use cool model (transfer learning + finetuning + interpolation)
 - YOLO
@@ -63,17 +66,10 @@
 - Like how models need multilingual data even for a single language
 - Can remove compatibility layers between topics as Claude has basic grasp of everything
 
-## Learning Goals
-- Entropy
-- Continue reading transformers
-- Watch transformer resources (3Blue1Brown, Karpathy)
-- Make sure you got it - officially ahead of your 2020 self
-
 ### Learn
 - Yazi shortcuts
 - OSS licenses
 - Hashes
-
 
 ## Configuration & Setup
 - Shell welcome reminders about aliases
