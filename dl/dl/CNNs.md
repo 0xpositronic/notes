@@ -54,6 +54,11 @@ So we apply multiple convolutions in parraler to the data. Each producing new se
 
 #### READ 10.2.7 - 167
 
+
+# convolution output size calculation:
+![[Pasted image 20250224215459.png]]
+
+
 ### Receptive field
 number of input pixels contributing the result of a single output pixel
 

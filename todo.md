@@ -1,6 +1,5 @@
-internship
-boomark + note remake
-ray tracing finish 0,1.1
+do something pls
+claude code: boomark + note remake
 
 
 give a prompt and freeze the network.
@@ -24,12 +23,6 @@ I can remove any complability layers between topics as he has a basic grasp of e
 
 
 
-
-
-
-
-
-
 hai!
 
 
@@ -38,28 +31,9 @@ yaml uses less tokens than json
 
 nushell hook doesn't account for extra two hours 
 
-m2 kat belediye kriterleri
-
-ortaokul yarisma derece ve katilim belgesi
-patent belgesi
-stanford kurs belgesi
-
-yapay zeka alani icin ekstra
- Transkript dışındaki beyanların onaylanabilmesi için aşağıda belirtilen kriterlerin tamamı yüklenen belgede yer almalıdır. Bu kriterlere uymayan beyanlar Üniversiteniz Kariyer Merkezi tarafından reddedilecektir.
-
-1. Kişinin kimlik bilgileri (adı, soyadı)
-2. Faaliyetin
-    - Adı
-    - Düzenlenme tarihi
-    - Düzenleyen kurum bilgisi
- 3. Kişinin söz konusu etkinliğe katıldığını açıkça ifade eden / ispatlayan, düzenleyici kurum tarafından gönderilmiş resmi e-posta ya da belge
-
-
-
 
 If I w ill spend that much time just going to school I better learn stuff when I'm there or on my commute
 
-helix markdown bypasses no_wrap
 let claude create practice challenges for navigating in helix given your config and other keybinds
 laptop setup
 shell welcome reminders about aliases
@@ -76,47 +50,6 @@ notebook setup
 better notes
 internship - tusas idea
 andrej
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -161,7 +94,6 @@ entropy
 
 # TODO
 SYNC SYNC SYNC SYNC AAAAAA
-garbage collect redundant cuda-shell (claude chat ready)
 obsidian in home-manager
 better git sync / merge conflict resolver
 I have to shome everytime I want synatx highlighting in cuda code
