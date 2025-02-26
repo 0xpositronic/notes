@@ -1,4 +1,9 @@
 # Current
+- eee lab
+- tapo plug setup
+- git conflict resolving
+- math, eee
+- laptop
 - calculus -> integration techniques
 - petul presentation
 - tidy up
@@ -20,12 +25,12 @@ get a few new prints (project lyra)
 - YAML uses fewer tokens than JSON
 
 ## Configuration & Setup
+- Better git sync / merge conflict resolver
 - Shell welcome reminders about aliases
 - One alias to launch everything together
 - Better son with Claude (nushell not consistent)
 - Use uv instead of pip and venv
 - Obsidian in home-manager
-- Better git sync / merge conflict resolver
 - Fix syntax highlighting in CUDA code
 - SYNC SYNC SYNC SYNC AAAAAA
 
