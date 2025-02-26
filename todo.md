@@ -1,12 +1,12 @@
 # Current
-- eee lab
-- math, eee
-- laptop
+- calculus -> integration techniques
 - petul presentation
-- notes cleanup
-- dl book
+- tidy up
+- laptop conf with claude
+- notes cleanup with claude
 
 Tusas idea
+back to dl book
 CUDA DAY!
 get a few new prints (project lyra)
 
