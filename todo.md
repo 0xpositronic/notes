@@ -1,5 +1,5 @@
 # Current
-- laptop conf with claude (arduino)
+- laptop conf with claude (arduino
 - presentation
 - tapo plug setup
 
