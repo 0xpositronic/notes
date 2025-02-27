@@ -6,6 +6,7 @@
 - better prompting techniques
 - future
 
+- fix notes/ script paths
 - laptop conf with claude (arduino
 - presentation
 - tapo plug setup
