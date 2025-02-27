@@ -1,13 +1,9 @@
 # Current
-- eee lab
-- tapo plug setup
-- git conflict resolving
-- math, eee
-- laptop
-- calculus -> integration techniques
 - petul presentation
+- tapo plug setup
+- calculus -> integration techniques
 - tidy up
-- laptop conf with claude
+- laptop conf with claude (arduino)
 - notes cleanup with claude
 
 Tusas idea
