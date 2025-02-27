@@ -1,8 +1,5 @@
 # Current
-- eee lab
 - tapo plug setup
-- git conflict resolving
-- math, eee
 - laptop
 - calculus -> integration techniques
 - petul presentation
