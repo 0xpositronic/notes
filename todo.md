@@ -2,9 +2,8 @@
 - tapo plug setup
 - laptop
 - calculus -> integration techniques
-- petul presentation
 - tidy up
-- laptop conf with claude
+- laptop conf with claude (arduino)
 - notes cleanup with claude
 
 Tusas idea
