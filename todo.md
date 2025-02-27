@@ -1,4 +1,11 @@
 # Current
+- embeddings?
+- tool using
+- RLHF training and Reasoning/problem solving
+- imagen models
+- better prompting techniques
+- future
+
 - laptop conf with claude (arduino
 - presentation
 - tapo plug setup
