@@ -1,16 +1,10 @@
 # Current
-- embeddings?
-- tool using
-- RLHF training and Reasoning/problem solving
-- imagen models
-- better prompting techniques
-- future
-
 - fix notes/ script paths
 - laptop conf with claude (arduino
 - presentation
 - tapo plug setup
 
+desktop mic to istant llm query setup (suoerwhusper)
 calculus -> integration techniques
 Tusas idea
 back to dl book
