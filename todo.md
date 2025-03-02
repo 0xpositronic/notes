@@ -1,10 +1,8 @@
 # Current
-- fix notes/ script paths
-- laptop conf with claude (arduino
-- presentation
-- tapo plug setup
+fix notes/ script paths
+laptop conf with claude (arduino
+tapo plug setup
 
-desktop mic to istant llm query setup (suoerwhusper)
 calculus -> integration techniques
 Tusas idea
 back to dl book
@@ -17,8 +15,6 @@ get a few new prints (project lyra)
 - If spending that much time going to school, better learn while there or on commute
 - the things that give you the "ick" are actually not that hard
 - Let your body relax with quiet music
-### tips
-- YAML uses fewer tokens than JSON
 
 ## Configuration & Setup
 - Better git sync / merge conflict resolver
