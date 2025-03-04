@@ -1,4 +1,6 @@
 # Current
+CUDA DAY!
+
 fix notes/ script paths
 laptop conf with claude (arduino
 tapo plug setup
@@ -6,7 +8,6 @@ tapo plug setup
 calculus -> integration techniques
 Tusas idea
 back to dl book
-CUDA DAY!
 get a few new prints (project lyra)
 
 ## Personal Reminders
